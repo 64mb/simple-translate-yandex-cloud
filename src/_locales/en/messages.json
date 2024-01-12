@@ -5,12 +5,6 @@
   "extDescription": {
     "message": "Quickly translate selected or typed text on web pages. Supports Google Translate and DeepL API."
   },
-  "donateWithPaypalLabel": {
-    "message": "Donate with PayPal"
-  },
-  "donateLabel": {
-    "message": "Donate"
-  },
   "enableOnThisPage": {
     "message": "Enable translation on this page"
   },
@@ -88,6 +82,15 @@
   },
   "deeplAuthKeyCaptionLabel": {
     "message": "Enter the authentication key for the DeepL API."
+  },
+  "yandexCloudApiLabel": {
+    "message": "Yandex Cloud API"
+  },
+  "yandexCloudApiCaptionLabel": {
+    "message": "Use Yandex Cloud API. You must register service account with API key at your cloud console."
+  },
+  "howToUseYandexCloudLabel": {
+    "message": "How to register Yandex Cloud API"
   },
   "targetLangCaptionLabel": {
     "message": "Select the default target language."
@@ -410,15 +413,6 @@
   "licenseLabel": {
     "message": "License"
   },
-  "donationLabel": {
-    "message": "Please make a donation"
-  },
-  "donationCaptionLabel": {
-    "message": "Thank you for using Simple Translate.<br>Your support will be a big encouragement, as I continue to develop the add-on.<br>If you like Simple Translate, I would be pleased if you could consider donating."
-  },
-  "amazonTitleLabel": {
-    "message": "amazon.co.jp eGift Cards"
-  },
   "sponsorsLabel": {
     "message": "Sponsors"
   },
@@ -430,12 +424,6 @@
   },
   "privacyPolicyLabel": {
     "message": "Privacy policy"
-  },
-  "amazonUrl": {
-    "message": "https://www.amazon.co.jp/dp/B004N3APGO?language=en_US"
-  },
-  "addonUrl": {
-    "message": "https://addons.mozilla.org/en-US/firefox/addon/simple-translate/?src=optionpage"
   },
   "networkError": {
     "message": "Error: Check network connection status."

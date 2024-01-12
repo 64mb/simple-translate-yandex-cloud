@@ -107,6 +107,48 @@ const sendRequestToDeepL = async (word, sourceLang, targetLang) => {
   return resultData;
 };
 
+const sendRequestToYandexCloud = async (word, sourceLang, targetLang) => {
+  const url = `https://translate.api.cloud.yandex.net/translate/v2/translate`;
+
+  const apiKey = getSettings("yandexCloudAuthKey");
+
+  const result = await axios.post(url, {
+    texts: [word],
+    targetLanguageCode: targetLang,
+  }, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Api-Key ${apiKey}`,
+    }
+  }).catch(error => error.response);
+
+  const resultData = {
+    resultText: "",
+    candidateText: "",
+    sourceLanguage: "",
+    percentage: 0,
+    isError: false,
+    errorMessage: ""
+  };
+
+  if (!result || result?.status !== 200) {
+    resultData.isError = true;
+
+    if (!result || result.status === 0) resultData.errorMessage = browser.i18n.getMessage("networkError");
+    else if (result.status === 429 || result.status === 503) resultData.errorMessage = browser.i18n.getMessage("unavailableError");
+    else resultData.errorMessage = `${browser.i18n.getMessage("unknownError")} [${result?.status} ${result?.statusText}]`;
+
+    log.error(logDir, "sendRequestToYandexCloud()", result);
+    return resultData;
+  }
+
+  resultData.sourceLanguage = 'en'; // TODO fix
+  resultData.percentage = 1;
+  resultData.resultText = result.data.translations.map(sentence => sentence.text).join("");
+
+  log.log(logDir, "sendRequestToYandexCloud()", resultData);
+  return resultData;
+};
 
 export default async (sourceWord, sourceLang = "auto", targetLang, translationApi) => {
   log.log(logDir, "tranlate()", sourceWord, targetLang, translationApi);
@@ -123,9 +165,18 @@ export default async (sourceWord, sourceLang = "auto", targetLang, translationAp
   const history = getHistory(sourceWord, sourceLang, targetLang);
   if (history) return history.result;
 
-  const result = getSettings("translationApi") === "google" ?
-    await sendRequestToGoogle(sourceWord, sourceLang, targetLang) :
-    await sendRequestToDeepL(sourceWord, sourceLang, targetLang);
+  let result = null;
+
+  const translationApiSetting = getSettings("translationApi");
+
+  if(translationApiSetting === "google"){
+    result = await sendRequestToGoogle(sourceWord, sourceLang, targetLang);
+  } else if (translationApiSetting === 'yandex-cloud') {
+    result = await sendRequestToYandexCloud(sourceWord, sourceLang, targetLang);
+  } else {
+    result = await sendRequestToDeepL(sourceWord, sourceLang, targetLang);
+  }
+  
   setHistory(sourceWord, sourceLang, targetLang, translationApi, result);
   return result;
 };

@@ -1,15 +1,9 @@
 {
   "extName": {
-    "message": "Simple Translate"
+    "message": "Simple Translate Yandex Cloud"
   },
   "extDescription": {
     "message": "Быстро переводите выделенный или набранный текст на веб-страницах. Поддерживается Google Переводчик и DeepL API."
-  },
-  "donateWithPaypalLabel": {
-    "message": "Пожертвование через PayPal"
-  },
-  "donateLabel": {
-    "message": "Пожертвовать"
   },
   "enableOnThisPage": {
     "message": "Включить перевод на этой странице"
@@ -88,6 +82,15 @@
   },
   "deeplAuthKeyCaptionLabel": {
     "message": "Введите ключ аутентификации для DeepL API."
+  },
+  "yandexCloudApiLabel": {
+    "message": "Yandex Cloud API"
+  },
+  "yandexCloudApiCaptionLabel": {
+    "message": "Use Yandex Cloud API. You must register service account with API key at your cloud console."
+  },
+  "howToUseYandexCloudLabel": {
+    "message": "How to register Yandex Cloud API"
   },
   "targetLangCaptionLabel": {
     "message": "Выберите язык перевода по умолчанию."
@@ -410,18 +413,6 @@
   "licenseLabel": {
     "message": "Лицензия"
   },
-  "donationLabel": {
-    "message": "Пожалуйста, поблагодарите автора"
-  },
-  "donationCaptionLabel": {
-    "message": "Спасибо за использование Simple Translate.<br>Ваша поддержка это большая помощь в дальнейшем развитии расширения.<br>Если вам нравится Simple Translate, пожалуйста, подумайте о внесении небольшого пожертвования."
-  },
-  "amazonTitleLabel": {
-    "message": "Карты eGift от amazon.co.jp"
-  },
-  "sponsorsLabel": {
-    "message": "Спонсоры"
-  },
   "addonPageLabel": {
     "message": "Страница расширения"
   },
@@ -430,12 +421,6 @@
   },
   "privacyPolicyLabel": {
     "message": "Политика конфиденциальности"
-  },
-  "amazonUrl": {
-    "message": "https://www.amazon.co.jp/dp/B004N3APGO?language=ru_RU"
-  },
-  "addonUrl": {
-    "message": "https://addons.mozilla.org/ru/firefox/addon/simple-translate/?src=optionpage"
   },
   "networkError": {
     "message": "Ошибка: проверьте состояние сетевого подключения."

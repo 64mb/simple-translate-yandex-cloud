@@ -16,8 +16,8 @@ const getDefaultLangs = () => {
   const langOptions = generateLangOptions("google");
 
   const shouldUseUiLang = langOptions.some(lang => lang.value == uiLang);
-  const targetLang = shouldUseUiLang ? uiLang : "en";
-  const secondTargetLang = targetLang === "en" ? "ja" : "en";
+  const targetLang = shouldUseUiLang ? uiLang : "ru";
+  const secondTargetLang = targetLang === "ru" ? "en" : "ru";
 
   return { targetLang, secondTargetLang };
 };
@@ -33,12 +33,6 @@ const updateLangsWhenChangeTranslationApi = () => {
       case "en": return "en-US";
       case "en-US":
       case "en-GB": return "en";
-      case "zh": return "zh-CN";
-      case "zh-CN":
-      case "zh-TW": return "zh";
-      case "pt": return "pt-PT";
-      case "pt-PT":
-      case "pt-BR": return "pt";
       default: return currentLangs[0];
     }
   };
@@ -79,7 +73,7 @@ export default [
                 { className: "caption" },
                 React.createElement("a",
                   {
-                    href: "https://github.com/sienori/simple-translate/wiki/How-to-register-DeepL-API",
+                    href: "https://www.deepl.com/docs-api",
                     target: "_blank"
                   },
                   browser.i18n.getMessage("howToUseDeeplLabel"))
@@ -115,7 +109,34 @@ export default [
             default: "",
             placeholder: "00000000-0000-0000-0000-00000000000000:fx",
             shouldShow: () => (getSettings("translationApi") === "deepl"),
-          }
+          },
+          {
+            id: "translationApi",
+            title: "yandexCloudApiLabel",
+            captions: ["yandexCloudApiCaptionLabel"],
+            extraCaption:
+              React.createElement("p",
+                { className: "caption" },
+                React.createElement("a",
+                  {
+                    href: "https://cloud.yandex.ru/ru/docs/translate/operations/translate",
+                    target: "_blank"
+                  },
+                  browser.i18n.getMessage("howToUseYandexCloudLabel"))
+              ),
+            type: "radio",
+            value: "yandex-cloud",
+            handleChange: () => updateLangsWhenChangeTranslationApi()
+          },
+          {
+            id: "yandexCloudAuthKey",
+            title: "yandexCloudAuthKeyLabel",
+            captions: ["yandexCloudAuthKeyCaptionLabel"],
+            type: "text",
+            default: "",
+            placeholder: "00000000-0000-0000-0000-00000000000000:fx",
+            shouldShow: () => (getSettings("translationApi") === "yandex-cloud"),
+          },
         ]
       },
       {
