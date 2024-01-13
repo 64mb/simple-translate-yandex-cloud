@@ -1,9 +1,9 @@
 {
   "extName": {
-    "message": "Simple Translate"
+    "message": "Simple Translate @64mb"
   },
   "extDescription": {
-    "message": "Quickly translate selected or typed text on web pages. Supports Google Translate and DeepL API."
+    "message": "Quickly translate selected or typed text on web pages. Supports Google Translate, DeepL API and Yandex Cloud Translate."
   },
   "enableOnThisPage": {
     "message": "Enable translation on this page"
@@ -22,6 +22,9 @@
   },
   "openInDeeplLabel": {
     "message": "Open in DeepL Translator"
+  },
+  "openInYandexLabel": {
+    "message": "Open in Yandex Translate"
   },
   "copyLabel": {
     "message": "Copy"

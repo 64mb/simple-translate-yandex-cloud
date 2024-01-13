@@ -1,101 +1,100 @@
-import browser from "webextension-polyfill";
-import log from "loglevel";
-import axios from "axios";
-import { getSettings } from "src/settings/settings";
+import browser from 'webextension-polyfill';
+import log from 'loglevel';
+import axios from 'axios';
+import { getSettings } from 'src/settings/settings';
 
-let translationHistory = [];
+const translationHistory = [];
 
-const logDir = "common/translate";
+const logDir = 'common/translate';
 
 const getHistory = (sourceWord, sourceLang, targetLang, translationApi) => {
   const history = translationHistory.find(
-    history =>
-      history.sourceWord == sourceWord &&
-      history.sourceLang == sourceLang &&
-      history.targetLang == targetLang &&
-      history.translationApi == translationApi &&
-      !history.result.isError
+    (history) => history.sourceWord == sourceWord
+      && history.sourceLang == sourceLang
+      && history.targetLang == targetLang
+      && history.translationApi == translationApi
+      && !history.result.isError,
   );
   return history;
 };
 
 const setHistory = (sourceWord, sourceLang, targetLang, translationApi, result) => {
   translationHistory.push({
-    sourceWord: sourceWord,
-    sourceLang: sourceLang,
-    targetLang: targetLang,
-    translationApi: translationApi,
-    result: result
+    sourceWord,
+    sourceLang,
+    targetLang,
+    translationApi,
+    result,
   });
 };
 
 const sendRequestToGoogle = async (word, sourceLang, targetLang) => {
   const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&dt=bd&dj=1&q=${encodeURIComponent(
-    word
+    word,
   )}`;
-  const result = await axios.get(url).catch(error => error.response);
+  const result = await axios.get(url).catch((error) => error.response);
 
   const resultData = {
-    resultText: "",
-    candidateText: "",
-    sourceLanguage: "",
+    resultText: '',
+    candidateText: '',
+    sourceLanguage: '',
     percentage: 0,
     isError: false,
-    errorMessage: ""
+    errorMessage: '',
   };
 
   if (!result || result?.status !== 200) {
     resultData.isError = true;
 
-    if (!result || result.status === 0) resultData.errorMessage = browser.i18n.getMessage("networkError");
-    else if (result.status === 429 || result.status === 503) resultData.errorMessage = browser.i18n.getMessage("unavailableError");
-    else resultData.errorMessage = `${browser.i18n.getMessage("unknownError")} [${result?.status} ${result?.statusText}]`;
+    if (!result || result.status === 0) resultData.errorMessage = browser.i18n.getMessage('networkError');
+    else if (result.status === 429 || result.status === 503) resultData.errorMessage = browser.i18n.getMessage('unavailableError');
+    else resultData.errorMessage = `${browser.i18n.getMessage('unknownError')} [${result?.status} ${result?.statusText}]`;
 
-    log.error(logDir, "sendRequest()", result);
+    log.error(logDir, 'sendRequest()', result);
     return resultData;
   }
 
   resultData.sourceLanguage = result.data.src;
   resultData.percentage = result.data.ld_result.srclangs_confidences[0];
-  resultData.resultText = result.data.sentences.map(sentence => sentence.trans).join("");
+  resultData.resultText = result.data.sentences.map((sentence) => sentence.trans).join('');
   if (result.data.dict) {
     resultData.candidateText = result.data.dict
-      .map(dict => `${dict.pos}${dict.pos != "" ? ": " : ""}${dict.terms !== undefined?dict.terms.join(", "):""}\n`)
-      .join("");
+      .map((dict) => `${dict.pos}${dict.pos != '' ? ': ' : ''}${dict.terms !== undefined ? dict.terms.join(', ') : ''}\n`)
+      .join('');
   }
 
-  log.log(logDir, "sendRequest()", resultData);
+  log.log(logDir, 'sendRequest()', resultData);
   return resultData;
 };
 
 const sendRequestToDeepL = async (word, sourceLang, targetLang) => {
-  let params = new URLSearchParams();
-  const authKey = getSettings("deeplAuthKey");
-  params.append("auth_key", authKey);
-  params.append("text", word);
-  params.append("target_lang", targetLang);
-  const url = getSettings("deeplPlan") === "deeplFree" ?
-    "https://api-free.deepl.com/v2/translate" :
-    "https://api.deepl.com/v2/translate";
-  const result = await axios.post(url, params).catch(e => e.response);
+  const params = new URLSearchParams();
+  const authKey = getSettings('deeplAuthKey');
+  params.append('auth_key', authKey);
+  params.append('text', word);
+  params.append('target_lang', targetLang);
+  const url = getSettings('deeplPlan') === 'deeplFree'
+    ? 'https://api-free.deepl.com/v2/translate'
+    : 'https://api.deepl.com/v2/translate';
+  const result = await axios.post(url, params).catch((e) => e.response);
 
   const resultData = {
-    resultText: "",
-    candidateText: "",
-    sourceLanguage: "",
+    resultText: '',
+    candidateText: '',
+    sourceLanguage: '',
     percentage: 0,
     isError: false,
-    errorMessage: ""
+    errorMessage: '',
   };
 
   if (!result || result?.status !== 200) {
     resultData.isError = true;
 
-    if (!result || result.status === 0) resultData.errorMessage = browser.i18n.getMessage("networkError");
-    else if (result.status === 403) resultData.errorMessage = browser.i18n.getMessage("deeplAuthError");
-    else resultData.errorMessage = `${browser.i18n.getMessage("unknownError")} [${result?.status} ${result?.statusText}] ${result?.data.message}`;
+    if (!result || result.status === 0) resultData.errorMessage = browser.i18n.getMessage('networkError');
+    else if (result.status === 403) resultData.errorMessage = browser.i18n.getMessage('deeplAuthError');
+    else resultData.errorMessage = `${browser.i18n.getMessage('unknownError')} [${result?.status} ${result?.statusText}] ${result?.data.message}`;
 
-    log.error(logDir, "sendRequestToDeepL()", result);
+    log.error(logDir, 'sendRequestToDeepL()', result);
     return resultData;
   }
 
@@ -103,14 +102,14 @@ const sendRequestToDeepL = async (word, sourceLang, targetLang) => {
   resultData.sourceLanguage = result.data.translations[0].detected_source_language.toLowerCase();
   resultData.percentage = 1;
 
-  log.log(logDir, "sendRequestToDeepL()", resultData);
+  log.log(logDir, 'sendRequestToDeepL()', resultData);
   return resultData;
 };
 
 const sendRequestToYandexCloud = async (word, sourceLang, targetLang) => {
-  const url = `https://translate.api.cloud.yandex.net/translate/v2/translate`;
+  const url = 'https://translate.api.cloud.yandex.net/translate/v2/translate';
 
-  const apiKey = getSettings("yandexCloudAuthKey");
+  const apiKey = getSettings('yandexCloudAuthKey');
 
   const result = await axios.post(url, {
     texts: [word],
@@ -118,65 +117,66 @@ const sendRequestToYandexCloud = async (word, sourceLang, targetLang) => {
   }, {
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Api-Key ${apiKey}`,
-    }
-  }).catch(error => error.response);
+      Authorization: `Api-Key ${apiKey}`,
+    },
+  }).catch((error) => error.response);
 
   const resultData = {
-    resultText: "",
-    candidateText: "",
-    sourceLanguage: "",
+    resultText: '',
+    candidateText: '',
+    sourceLanguage: '',
     percentage: 0,
     isError: false,
-    errorMessage: ""
+    errorMessage: '',
   };
 
   if (!result || result?.status !== 200) {
     resultData.isError = true;
 
-    if (!result || result.status === 0) resultData.errorMessage = browser.i18n.getMessage("networkError");
-    else if (result.status === 429 || result.status === 503) resultData.errorMessage = browser.i18n.getMessage("unavailableError");
-    else resultData.errorMessage = `${browser.i18n.getMessage("unknownError")} [${result?.status} ${result?.statusText}]`;
+    if (!result || result.status === 0) resultData.errorMessage = browser.i18n.getMessage('networkError');
+    else if (result.status === 429 || result.status === 503) resultData.errorMessage = browser.i18n.getMessage('unavailableError');
+    else resultData.errorMessage = `${browser.i18n.getMessage('unknownError')} [${result?.status} ${result?.statusText}]`;
 
-    log.error(logDir, "sendRequestToYandexCloud()", result);
+    log.error(logDir, 'sendRequestToYandexCloud()', result);
     return resultData;
   }
 
-  resultData.sourceLanguage = 'en'; // TODO fix
+  resultData.sourceLanguage = result.data.translations[0].detectedLanguageCode;
   resultData.percentage = 1;
-  resultData.resultText = result.data.translations.map(sentence => sentence.text).join("");
+  resultData.resultText = result.data.translations.map((sentence) => sentence.text).join('');
 
-  log.log(logDir, "sendRequestToYandexCloud()", resultData);
+  log.log(logDir, 'sendRequestToYandexCloud()', resultData);
   return resultData;
 };
 
-export default async (sourceWord, sourceLang = "auto", targetLang, translationApi) => {
-  log.log(logDir, "tranlate()", sourceWord, targetLang, translationApi);
+export default async (sourceWord, sourceLang = 'auto', targetLang, translationApi) => {
+  log.log(logDir, 'tranlate()', sourceWord, targetLang, translationApi);
   sourceWord = sourceWord.trim();
-  if (sourceWord === "")
+  if (sourceWord === '') {
     return {
-      resultText: "",
-      candidateText: "",
-      sourceLanguage: "en",
+      resultText: '',
+      candidateText: '',
+      sourceLanguage: 'en',
       percentage: 0,
-      statusText: "OK"
+      statusText: 'OK',
     };
+  }
 
   const history = getHistory(sourceWord, sourceLang, targetLang);
   if (history) return history.result;
 
   let result = null;
 
-  const translationApiSetting = getSettings("translationApi");
+  const translationApiSetting = getSettings('translationApi');
 
-  if(translationApiSetting === "google"){
+  if (translationApiSetting === 'google') {
     result = await sendRequestToGoogle(sourceWord, sourceLang, targetLang);
   } else if (translationApiSetting === 'yandex-cloud') {
     result = await sendRequestToYandexCloud(sourceWord, sourceLang, targetLang);
   } else {
     result = await sendRequestToDeepL(sourceWord, sourceLang, targetLang);
   }
-  
+
   setHistory(sourceWord, sourceLang, targetLang, translationApi, result);
   return result;
 };

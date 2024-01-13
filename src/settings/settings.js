@@ -1,16 +1,16 @@
-import browser from "webextension-polyfill";
-import log from "loglevel";
-import defaultSettings from "./defaultSettings";
+import browser from 'webextension-polyfill';
+import log from 'loglevel';
+import defaultSettings from './defaultSettings';
 
-const logDir = "settings/settings";
+const logDir = 'settings/settings';
 let currentSettings = {};
 
 export const initSettings = async () => {
-  const response = await browser.storage.local.get("Settings");
+  const response = await browser.storage.local.get('Settings');
   currentSettings = response.Settings || {};
   let shouldSave = false;
 
-  const pushSettings = element => {
+  const pushSettings = (element) => {
     if (element.id == undefined || element.default == undefined) return;
     if (currentSettings[element.id] == undefined) {
       currentSettings[element.id] = element.default;
@@ -19,11 +19,11 @@ export const initSettings = async () => {
   };
 
   const fetchDefaultSettings = () => {
-    defaultSettings.forEach(category => {
-      category.elements.forEach(optionElement => {
+    defaultSettings.forEach((category) => {
+      category.elements.forEach((optionElement) => {
         pushSettings(optionElement);
         if (optionElement.childElements) {
-          optionElement.childElements.forEach(childElement => {
+          optionElement.childElements.forEach((childElement) => {
             pushSettings(childElement);
           });
         }
@@ -36,28 +36,24 @@ export const initSettings = async () => {
 };
 
 export const setSettings = async (id, value) => {
-  log.info(logDir, "setSettings()", id, value);
+  log.info(logDir, 'setSettings()', id, value);
   currentSettings[id] = value;
   await browser.storage.local.set({ Settings: currentSettings });
 };
 
-export const getSettings = id => {
-  return currentSettings[id];
-};
+export const getSettings = (id) => currentSettings[id];
 
-export const getAllSettings = () => {
-  return currentSettings;
-};
+export const getAllSettings = () => currentSettings;
 
 export const resetAllSettings = async () => {
-  log.info(logDir, "resetAllSettings()");
+  log.info(logDir, 'resetAllSettings()');
   currentSettings = {};
   await browser.storage.local.set({ Settings: currentSettings });
   await initSettings();
 };
 
 export const handleSettingsChange = (changes, area) => {
-  if (Object.keys(changes).includes("Settings")) {
+  if (Object.keys(changes).includes('Settings')) {
     currentSettings = changes.Settings.newValue;
     return currentSettings;
   }
@@ -67,27 +63,27 @@ export const handleSettingsChange = (changes, area) => {
 export const exportSettings = async () => {
   const settingsIds = getSettingsIds();
 
-  let settingsObj = {};
+  const settingsObj = {};
   for (const id of settingsIds) {
     settingsObj[id] = getSettings(id);
   }
 
   const downloadUrl = URL.createObjectURL(
-    new Blob([JSON.stringify(settingsObj, null, "  ")], {
-      type: "aplication/json"
-    })
+    new Blob([JSON.stringify(settingsObj, null, '  ')], {
+      type: 'aplication/json',
+    }),
   );
 
-  const a = document.createElement("a");
+  const a = document.createElement('a');
   document.body.appendChild(a);
-  a.download = "SimpleTranslate_Settings.json";
+  a.download = 'SimpleTranslate_Settings.json';
   a.href = downloadUrl;
   a.click();
   a.remove();
   URL.revokeObjectURL(downloadUrl);
 };
 
-export const importSettings = async e => {
+export const importSettings = async (e) => {
   const reader = new FileReader();
 
   reader.onload = async () => {
@@ -106,12 +102,12 @@ export const importSettings = async e => {
 };
 
 const getSettingsIds = () => {
-  let settingsIds = [];
-  defaultSettings.forEach(category => {
-    category.elements.forEach(optionElement => {
+  const settingsIds = [];
+  defaultSettings.forEach((category) => {
+    category.elements.forEach((optionElement) => {
       if (optionElement.id && optionElement.default !== undefined) settingsIds.push(optionElement.id);
       if (optionElement.childElements) {
-        optionElement.childElements.forEach(childElement => {
+        optionElement.childElements.forEach((childElement) => {
           if (childElement.id && childElement.default !== undefined) settingsIds.push(childElement.id);
         });
       }

@@ -1,6 +1,6 @@
 {
   "extName": {
-    "message": "Simple Translate Yandex Cloud"
+    "message": "Simple Translate @64mb"
   },
   "extDescription": {
     "message": "Быстро переводите выделенный или набранный текст на веб-страницах. Поддерживается Google Переводчик и DeepL API."
@@ -22,6 +22,9 @@
   },
   "openInDeeplLabel": {
     "message": "Открыть в DeepL Translator"
+  },
+  "openInYandexLabel": {
+    "message": "Открыть в Яндекс Переводчике"
   },
   "copyLabel": {
     "message": "Копировать"
@@ -87,10 +90,10 @@
     "message": "Yandex Cloud API"
   },
   "yandexCloudApiCaptionLabel": {
-    "message": "Use Yandex Cloud API. You must register service account with API key at your cloud console."
+    "message": "Используйте Yandex Cloud API. Необходимо зарегистрировать сервисный аккаунт с API ключом в вашей облачной консоли."
   },
   "howToUseYandexCloudLabel": {
-    "message": "How to register Yandex Cloud API"
+    "message": "Как настроить Yandex Cloud API"
   },
   "targetLangCaptionLabel": {
     "message": "Выберите язык перевода по умолчанию."
